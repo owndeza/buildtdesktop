@@ -15,7 +15,7 @@ jobs:
     env:
       QT: qt6
       UPLOAD_ARTIFACT: "true"
-      ONLY_CACHE: "false"
+      ONLY_CACHE: "true"
       PREPARE_PATH: "Telegram/build/prepare/prepare.py"
       # Open credentials from the upstream nightly build. Replace with your own from https://my.telegram.org if needed.
       API_ID: "611335"
