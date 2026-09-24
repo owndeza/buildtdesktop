@@ -17,22 +17,15 @@ jobs:
       UPLOAD_ARTIFACT: "true"
       ONLY_CACHE: "false"
       PREPARE_PATH: "Telegram/build/prepare/prepare.py"
-      API_ID: ${{ secrets.TDESKTOP_API_ID }}
-      API_HASH: ${{ secrets.TDESKTOP_API_HASH }}
+      # Open credentials from the upstream nightly build. Replace with your own from https://my.telegram.org if needed.
+      API_ID: "611335"
+      API_HASH: "d524b414d21f4d37f08684c1df41ac9c"
 
     defaults:
       run:
         shell: cmd
 
     steps:
-      - name: Check API credentials.
-        shell: bash
-        run: |
-          if [ -z "$API_ID" ] || [ -z "$API_HASH" ]; then
-            echo "::error::Add TDESKTOP_API_ID and TDESKTOP_API_HASH to repository secrets (get them at https://my.telegram.org)."
-            exit 1
-          fi
-
       - name: Prepare directories.
         run: |
           mkdir %userprofile%\TBuild\Libraries
