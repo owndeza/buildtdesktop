@@ -73,7 +73,17 @@ jobs:
             '--add','Microsoft.VisualStudio.Component.VC.ATL', `
             '--quiet','--norestart'
           Write-Host "vs_installer exit code: $($p.ExitCode)"
-          if ($p.ExitCode -ne 0 -and $p.ExitCode -ne 3010) { exit $p.ExitCode }
+          if ($p.ExitCode -ne 0 -and $p.ExitCode -ne 3010) {
+            Write-Host "---- vs_installer logs ----"
+            Get-ChildItem "$env:TEMP\dd_*.log" -ErrorAction SilentlyContinue |
+              Sort-Object LastWriteTime -Descending |
+              Select-Object -First 3 |
+              ForEach-Object {
+                Write-Host "=== $($_.FullName) ==="
+                Get-Content $_.FullName -Tail 100
+              }
+            exit $p.ExitCode
+          }
 
       - uses: Eden-CI/msvc-dev-cmd@master
         name: Native Tools Command Prompt.
