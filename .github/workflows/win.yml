@@ -71,7 +71,7 @@ jobs:
           $p = Start-Process -FilePath $installer -Wait -PassThru -ArgumentList `
             'modify','--installPath',$installPath, `
             '--add','Microsoft.VisualStudio.Component.VC.ATL', `
-            '--quiet','--wait','--norestart','--nocache'
+            '--quiet','--norestart'
           Write-Host "vs_installer exit code: $($p.ExitCode)"
           if ($p.ExitCode -ne 0 -and $p.ExitCode -ne 3010) { exit $p.ExitCode }
 
