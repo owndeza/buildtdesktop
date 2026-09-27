@@ -61,36 +61,14 @@ jobs:
       - name: Install ATL component.
         shell: pwsh
         run: |
-          $installer = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vs_installer.exe"
-          $installPath = "C:\Program Files\Microsoft Visual Studio\18\Enterprise"
-          if (-not (Test-Path $installPath)) {
-            $installPath = "C:\Program Files\Microsoft Visual Studio\2022\Enterprise"
-          }
-          Write-Host "Using installer: $installer"
-          Write-Host "Using installPath: $installPath"
-          $p = Start-Process -FilePath $installer -Wait -PassThru -ArgumentList `
-            'modify','--installPath',$installPath, `
-            '--add','Microsoft.VisualStudio.Component.VC.ATL', `
-            '--quiet','--norestart'
-          Write-Host "vs_installer exit code: $($p.ExitCode)"
-          if ($p.ExitCode -ne 0 -and $p.ExitCode -ne 3010) {
-            Write-Host "---- vs_installer logs ----"
-            Get-ChildItem "$env:TEMP\dd_*.log" -ErrorAction SilentlyContinue |
-              Sort-Object LastWriteTime -Descending |
-              Select-Object -First 3 |
-              ForEach-Object {
-                Write-Host "=== $($_.FullName) ==="
-                Get-Content $_.FullName -Tail 100
-              }
-            Get-ChildItem "$env:ProgramData\Microsoft\VisualStudio\Setup\*.log" -ErrorAction SilentlyContinue |
-              Sort-Object LastWriteTime -Descending |
-              Select-Object -First 2 |
-              ForEach-Object {
-                Write-Host "=== $($_.FullName) ==="
-                Get-Content $_.FullName -Tail 100
-              }
-            exit $p.ExitCode
-          }
+          $exe = Join-Path $env:RUNNER_TEMP 'vs_buildtools.exe'
+          Invoke-WebRequest -Uri https://aka.ms/vs/18/stable/vs_buildtools.exe -OutFile $exe
+          $p = Start-Process -FilePath $exe -Wait -PassThru -ArgumentList `
+            '--quiet','--wait','--norestart','--nocache', `
+            '--add','Microsoft.VisualStudio.Component.VC.ATL'
+          Remove-Item $exe -Force -ErrorAction SilentlyContinue
+          Write-Host "vs_buildtools exit code: $($p.ExitCode)"
+          if ($p.ExitCode -ne 0 -and $p.ExitCode -ne 3010) { exit $p.ExitCode }
 
       - uses: Eden-CI/msvc-dev-cmd@master
         name: Native Tools Command Prompt.
